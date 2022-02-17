@@ -22,6 +22,9 @@ function Movies() {
         axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=19d2a4b7280c1746839d76b57c76d392&page=${page}`).then((res) => {
             console.table(res.data.results)
             setMovies(res.data.results);
+            let oldFav = localStorage.getItem("imdb");
+            oldFav = JSON.parse(oldFav)
+            setFavourites([...oldFav])
         }
         )
 
@@ -31,6 +34,13 @@ function Movies() {
         let newArray = [...favourites, movie]
         setFavourites([...newArray])
         console.log(newArray);
+        localStorage.setItem("imdb",JSON.stringify(newArray))
+    }
+
+    let del = (movie) => {
+        let newArray = favourites.filter((m)=> m.id!=movie.id)
+        setFavourites([...newArray])
+        localStorage.setItem("imdb",JSON.stringify(newArray))
     }
 
 
@@ -53,7 +63,7 @@ function Movies() {
                         {
                             movies.map((movie) => (
                                 <div className={`
-            bg-[url("https://image.tmdb.org/t/p/w500/${movie.backdrop_path}")] md:h-[30vh] md:w-[250px]
+                                    bg-[url("https://image.tmdb.org/t/p/w500/${movie.backdrop_path}")] md:h-[30vh] md:w-[250px]
             h-[25vh] w-[150px]
             bg-center bg-cover
             rounded-xl
@@ -64,40 +74,40 @@ function Movies() {
             `}
                                     onMouseEnter={() => {
                                         setHover(movie.id)
-                                        
+
                                     }}
                                     onMouseLeave={() =>
                                         setHover("")}
                                 >
                                     {
                                         hover == movie.id &&
-<>
-{
-    !favourites.find((m)=>m.id==movie.id) ? <div
-    className='absolute
+                                        <>
+                                            {
+                                                !favourites.find((m) => m.id == movie.id) ? <div
+                                                    className='absolute
 top-2 right-2
 p-2
 bg-gray-800
 rounded-xl
 text-xl
 cursor-pointer'
-    onClick={() => add(movie)}>
-    ❤️
-</div> : <div
-                                        className='absolute
-            top-2 right-10
+                                                    onClick={() => add(movie)}>
+                                                    ❤️
+                                                </div> : <div
+                                                    className='absolute
+            top-2 right-2
             p-2
             bg-gray-800
             rounded-xl
             text-xl
             cursor-pointer'
-                                        onClick={() => add(movie)}>
-                                        ❌
-                                    </div>
-}
-                                        
-                                        
-                                    </>
+                                                    onClick={() => del(movie)}>
+                                                    ❌
+                                                </div>
+                                            }
+
+
+                                        </>
                                     }
                                     <div className='w-full bg-gray-900 text-white font-bold py-2 text-center rounded-b-xl'>{movie.title}</div>
 
